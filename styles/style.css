@@ -1,5 +1,5 @@
 /* ============================================================
-   1. RESET & BOX MODEL
+   RESET & BOX MODEL
    ============================================================ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -8,7 +8,7 @@
 }
 
 /* ============================================================
-   2. CSS CUSTOM PROPERTIES (design tokens)
+   CSS CUSTOM PROPERTIES (design tokens)
    Single source of truth for colors, type scale, spacing, layout.
    ============================================================ */
 :root {
@@ -45,19 +45,10 @@
 }
 
 /* ============================================================
-   3. BASE – fluid root font-size, body defaults, heading scale
+   BASE – body defaults, heading scale
    ============================================================ */
 html {
   scroll-behavior: smooth;
-
-  /*
-   * Fluid base font-size: scales with viewport width so the page
-   * looks readable on everything from phones to 3K+ displays.
-   * Below ~1450px the minimum (1rem = browser default 16px) applies;
-   * above that it grows with the viewport, capped at 2rem (~32px).
-   * All rem values in this file are relative to THIS computed size.
-   */
-  font-size: clamp(1rem, 1.1vw, 2rem);
 }
 
 body {
@@ -83,15 +74,17 @@ a {
 }
 
 /* ============================================================
-   4. CONTENT WRAPPER – full width with horizontal breathing room
+   CONTENT WRAPPER – full width with horizontal breathing room
    ============================================================ */
 main {
   width: 100%;
   padding: 0 var(--space-sm);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* ============================================================
-   5. STICKY HEADER
+   STICKY HEADER
    ============================================================ */
 #site-header {
   position: sticky;
@@ -116,7 +109,7 @@ main {
 }
 
 /* ============================================================
-   6. NAVIGATION – desktop (inline row)
+   NAVIGATION – desktop (inline row)
    ============================================================ */
 #main-nav {
   display: flex;
@@ -141,7 +134,7 @@ main {
 }
 
 /* ============================================================
-   7. SECTIONS – spacing so sticky header doesn't overlay headings
+   SECTIONS – spacing so sticky header doesn't overlay headings
    ============================================================ */
 main section {
   /* scroll-margin-top reserves space equal to header height */
@@ -155,7 +148,7 @@ main section {
 }
 
 /* ============================================================
-   8. FOOTER
+   FOOTER
    ============================================================ */
 footer {
   width: 100%;
@@ -168,7 +161,7 @@ footer {
 }
 
 /* ============================================================
-   9. RESPONSIVE – hamburger menu at <= 48em (≈768px)
+   RESPONSIVE – hamburger menu at <= 48em (≈768px)
    Using em for media queries is best practice: zoom-resilient and
    independent of root font-size overrides.
    ============================================================ */
@@ -223,4 +216,230 @@ footer {
   #main-nav {
     position: relative;
   }
+}
+
+
+
+
+
+/* ============================================================
+   FORMS & INPUTS – accessible, predictable styling
+   ============================================================ */
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
+  padding: var(--space-xs) 0.75rem;
+  border-radius: 0.25rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 6rem;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  cursor: pointer;
+  border: 1px solid var(--color-accent);
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 0.25rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active {
+  transform: translateY(0);
+}
+
+button:focus,
+input[type="button"]:focus,
+input[type="submit"]:focus,
+input[type="reset"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
+}
+
+/* ============================================================
+   FOCUS STATES – keyboard navigation & accessibility
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  border-radius: 2px;
+  outline-offset: 0px;
+}
+
+/* ============================================================
+   IMAGES & MEDIA – responsive by default
+   ============================================================ */
+img,
+picture,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+}
+
+/* Prevent images from exceeding their container */
+figure {
+  margin: 0;
+  padding: 0;
+}
+
+figcaption {
+  font-size: var(--size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+  font-style: italic;
+}
+
+/* ============================================================
+   LISTS – sensible defaults
+   ============================================================ */
+ul,
+ol {
+  padding-left: 2rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-sm);
+}
+
+dt {
+  font-weight: 600;
+}
+
+dd {
+  margin-left: 0;
+}
+
+/* ============================================================
+   CODE & PREFORMATTED TEXT
+   ============================================================ */
+code,
+pre {
+  background-color: var(--color-bg-header);
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+code {
+  padding: 0.125rem 0.375rem;
+  color: var(--color-accent);
+}
+
+pre {
+  padding: var(--space-sm);
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ============================================================
+   UTILITY CLASSES – common patterns for rapid development
+   ============================================================ */
+/* Spacing */
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+
+/* Text alignment & transformation */
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.text-left   { text-align: left; }
+.text-upper  { text-transform: uppercase; }
+.text-lower  { text-transform: lowercase; }
+
+/* Text sizing & coloring */
+.text-muted  { color: var(--color-text-muted); }
+.text-accent { color: var(--color-accent); }
+.text-small  { font-size: var(--size-sm); }
+.text-large  { font-size: var(--size-lg); }
+
+/* Display & visibility */
+.hidden { display: none !important; }
+.invisible { visibility: hidden; }
+.sr-only {
+  /* Screen reader text – visually hidden but available to assistive tech */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Flexbox helpers */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-center { justify-content: center; align-items: center; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+
+/* Grid helpers */
+.grid { display: grid; }
+.grid-cols-2 { grid-template-columns: 1fr 1fr; }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Clearfix */
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
 }
