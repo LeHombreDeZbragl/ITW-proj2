@@ -1,0 +1,226 @@
+/* ============================================================
+   1. RESET & BOX MODEL
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   2. CSS CUSTOM PROPERTIES (design tokens)
+   Single source of truth for colors, type scale, spacing, layout.
+   ============================================================ */
+:root {
+  /* Colors */
+  --color-bg:         #0a1628;
+  --color-bg-header:  #0d1e38;
+  --color-text:       #e0e6f0;
+  --color-text-muted: #8a9ab0;
+  --color-accent:     #4a90d9;
+  --color-border:     #1e3050;
+
+  /* Typography */
+  --font-body: 'Ubuntu', sans-serif;
+
+  /* Type scale – relative to root font-size set on html below */
+  --size-sm: 0.875rem;  /* captions, footer */
+  --size-md: 1rem;      /* body text */
+  --size-lg: 1.25rem;   /* site title, lead text */
+  --size-h3: 1.375rem;
+  --size-h2: 1.75rem;
+  --size-h1: 2.25rem;
+
+  --line-height:         1.6;
+  --line-height-heading: 1.2;
+
+  /* Spacing scale */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 3rem;
+
+  /* Layout */
+  --header-height: 3.5rem;
+}
+
+/* ============================================================
+   3. BASE – fluid root font-size, body defaults, heading scale
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+
+  /*
+   * Fluid base font-size: scales with viewport width so the page
+   * looks readable on everything from phones to 3K+ displays.
+   * Below ~1450px the minimum (1rem = browser default 16px) applies;
+   * above that it grows with the viewport, capped at 2rem (~32px).
+   * All rem values in this file are relative to THIS computed size.
+   */
+  font-size: clamp(1rem, 1.1vw, 2rem);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--size-md);
+  line-height: var(--line-height);
+}
+
+/* Heading defaults */
+h1, h2, h3, h4, h5, h6 {
+  line-height: var(--line-height-heading);
+  font-weight: 700;
+}
+h1 { font-size: var(--size-h1); }
+h2 { font-size: var(--size-h2); }
+h3 { font-size: var(--size-h3); }
+
+/* Links default color */
+a {
+  color: var(--color-accent);
+}
+
+/* ============================================================
+   4. CONTENT WRAPPER – full width with horizontal breathing room
+   ============================================================ */
+main {
+  width: 100%;
+  padding: 0 var(--space-sm);
+}
+
+/* ============================================================
+   5. STICKY HEADER
+   ============================================================ */
+#site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background-color: var(--color-bg-header);
+  border-bottom: 0.0625rem solid var(--color-border);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) var(--space-sm);
+  min-height: var(--header-height);
+}
+
+.site-title {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: var(--size-lg);
+  font-weight: 700;
+}
+
+/* ============================================================
+   6. NAVIGATION – desktop (inline row)
+   ============================================================ */
+#main-nav {
+  display: flex;
+  align-items: center;
+}
+
+/* Nav list items in a horizontal row on desktop */
+#nav-list {
+  display: flex;
+  gap: var(--space-md);
+  list-style: none;
+}
+
+#nav-list a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+/* Hamburger button hidden on desktop */
+#hamburger {
+  display: none;
+}
+
+/* ============================================================
+   7. SECTIONS – spacing so sticky header doesn't overlay headings
+   ============================================================ */
+main section {
+  /* scroll-margin-top reserves space equal to header height */
+  scroll-margin-top: var(--header-height);
+  padding: var(--space-lg) 0;
+}
+
+/* Sub-sections inside #projects keep tighter spacing */
+#projects section {
+  padding: var(--space-md) 0 0;
+}
+
+/* ============================================================
+   8. FOOTER
+   ============================================================ */
+footer {
+  width: 100%;
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  border-top: 0.0625rem solid var(--color-border); /* 1px hairline */
+  text-align: center;
+  font-size: var(--size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   9. RESPONSIVE – hamburger menu at <= 48em (≈768px)
+   Using em for media queries is best practice: zoom-resilient and
+   independent of root font-size overrides.
+   ============================================================ */
+@media (max-width: 48em) {
+
+  /* Show hamburger button */
+  #hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 2rem;
+    height: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* Three bar lines – px used here intentionally for a crisp hairline */
+  #hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-text);
+  }
+
+  /* Nav list hidden by default on mobile */
+  #nav-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    gap: 0;
+    background-color: var(--color-bg-header);
+    border-bottom: 0.0625rem solid var(--color-border);
+    padding: var(--space-xs) 0;
+    list-style: none;
+  }
+
+  /* Nav list visible when .open is toggled by JS */
+  #nav-list.open {
+    display: flex;
+  }
+
+  #nav-list li a {
+    display: block;
+    padding: 0.75rem var(--space-sm);
+  }
+
+  #main-nav {
+    position: relative;
+  }
+}
