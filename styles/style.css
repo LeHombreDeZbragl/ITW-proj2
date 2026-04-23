@@ -49,6 +49,8 @@
    ============================================================ */
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
+  height: 100%;
 }
 
 body {
@@ -57,6 +59,7 @@ body {
   font-family: var(--font-body);
   font-size: var(--size-md);
   line-height: var(--line-height);
+  height: 100%;
 }
 
 /* Heading defaults */
@@ -74,20 +77,20 @@ a {
 }
 
 /* ============================================================
-   CONTENT WRAPPER – full width with horizontal breathing room
+   CONTENT WRAPPER
    ============================================================ */
 main {
   width: 100%;
-  padding: 0 var(--space-sm);
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
 }
 
 /* ============================================================
    STICKY HEADER
    ============================================================ */
 #site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
   z-index: 100;
   width: 100%;
@@ -134,30 +137,203 @@ main {
 }
 
 /* ============================================================
-   SECTIONS – spacing so sticky header doesn't overlay headings
+   FULL-SCREEN SNAP SECTIONS
    ============================================================ */
-main section {
-  /* scroll-margin-top reserves space equal to header height */
-  scroll-margin-top: var(--header-height);
-  padding: var(--space-lg) 0;
-}
-
-/* Sub-sections inside #projects keep tighter spacing */
-#projects section {
-  padding: var(--space-md) 0 0;
+main > section {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
 /* ============================================================
-   FOOTER
+   FOOTER (inside #contact, pinned to bottom of 100vh section)
    ============================================================ */
-footer {
-  width: 100%;
-  margin-top: var(--space-md);
+#contact > footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   padding: var(--space-sm);
-  border-top: 0.0625rem solid var(--color-border); /* 1px hairline */
   text-align: center;
   font-size: var(--size-sm);
-  color: var(--color-text-muted);
+  opacity: 0.5;
+  border-top: 0.0625rem solid color-mix(in srgb, var(--section-text) 20%, transparent);
+}
+
+/* ============================================================
+   STRAIGHT LINE MISSIONS GALLERY
+   ============================================================ */
+.slm-gallery {
+  display: flex;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+  overflow-x: auto;
+}
+
+.slm-gallery img {
+  height: 180px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+}
+
+/* ============================================================
+   HORIZONTAL TRACK (sections with sub-sections)
+   ============================================================ */
+.section-track {
+  display: flex;
+  height: calc(100% - 0.375rem); /* leave room for progress bar */
+  overflow-x: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.section-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual panels inside a track */
+.section-panel {
+  min-width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: calc(var(--header-height) + var(--space-lg))
+           max(var(--space-md), calc((100vw - 1200px) / 2))
+           var(--space-lg);
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+.section-panel a {
+  color: var(--section-accent);
+}
+
+.section-panel > h3 {
+  margin-bottom: var(--space-sm);
+}
+
+.section-panel > p {
+  margin-bottom: var(--space-xs);
+}
+
+.section-panel > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Title-only intro panel */
+.section-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-sm);
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+.section-intro h2 {
+  font-size: clamp(3rem, 8vw, 6rem);
+}
+
+.section-intro .scroll-hint {
+  font-size: var(--size-sm);
+  opacity: 0.5;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Single-panel sections – vertically centred */
+.section-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-sm);
+  height: 100%;
+  padding: calc(var(--header-height) + var(--space-lg))
+           max(var(--space-md), calc((100vw - 1200px) / 2))
+           var(--space-lg);
+  overflow-y: auto;
+}
+
+.section-content p {
+  margin-bottom: var(--space-xs);
+}
+
+.section-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Progress bar */
+.section-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.375rem;
+  background: color-mix(in srgb, var(--section-text) 15%, transparent);
+  z-index: 10;
+}
+
+.section-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--section-accent);
+  transition: width 0.1s linear;
+}
+
+/* ============================================================
+   SECTION COLOR THEMES
+   ============================================================ */
+#about {
+  --section-bg:     #0a1628;
+  --section-text:   #e0e6f0;
+  --section-accent: #4a90d9;
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+#education {
+  --section-bg:     #f0ede6;
+  --section-text:   #1a1020;
+  --section-accent: #c0601a;
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+#projects {
+  --section-bg:     #111827;
+  --section-text:   #e8f4f8;
+  --section-accent: #22c55e;
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+#hobbies {
+  --section-bg:     #f5f0fa;
+  --section-text:   #1e1b2e;
+  --section-accent: #7c3aed;
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+#contact {
+  --section-bg:     #0d2137;
+  --section-text:   #e8f4f8;
+  --section-accent: #f43f5e;
+  background-color: var(--section-bg);
+  color: var(--section-text);
+}
+
+/* Scope link colors to accent per section */
+main > section a {
+  color: var(--section-accent);
+}
+
+main > section a:hover {
+  opacity: 0.8;
 }
 
 /* ============================================================
@@ -216,230 +392,70 @@ footer {
   #main-nav {
     position: relative;
   }
+
+  /* ── Disable custom scroll layout on mobile ── */
+  html {
+    overflow-y: auto;
+    height: auto;
+  }
+
+  body {
+    height: auto;
+  }
+
+  #site-header {
+    position: sticky;
+  }
+
+  main > section {
+    height: auto;
+    overflow: visible;
+    scroll-margin-top: var(--header-height);
+  }
+
+  .section-content {
+    display: block;
+    height: auto;
+    padding: calc(var(--header-height) + var(--space-lg)) var(--space-sm) var(--space-lg);
+  }
+
+  .section-track {
+    display: block;
+    overflow-x: visible;
+    height: auto;
+  }
+
+  .section-panel {
+    min-width: 100%;
+    width: 100%;
+    height: auto;
+    overflow-y: visible;
+    padding: var(--space-lg) var(--space-sm);
+  }
+
+  .section-intro {
+    display: block;
+    text-align: left;
+    padding: calc(var(--header-height) + var(--space-lg)) var(--space-sm) var(--space-sm);
+  }
+
+  .section-intro h2 {
+    font-size: var(--size-h2);
+  }
+
+  .section-intro .scroll-hint {
+    display: none;
+  }
+
+  .section-progress {
+    display: none;
+  }
+
+  #contact > footer {
+    position: static;
+    border-top: 0.0625rem solid var(--color-border);
+    margin-top: var(--space-md);
+  }
 }
 
 
-
-
-
-/* ============================================================
-   FORMS & INPUTS – accessible, predictable styling
-   ============================================================ */
-input,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg);
-  padding: var(--space-xs) 0.75rem;
-  border-radius: 0.25rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.1);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 6rem;
-  font-family: 'Monaco', 'Courier New', monospace;
-}
-
-button,
-input[type="button"],
-input[type="submit"],
-input[type="reset"] {
-  cursor: pointer;
-  border: 1px solid var(--color-accent);
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: 0.25rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
-}
-
-button:active,
-input[type="button"]:active,
-input[type="submit"]:active,
-input[type="reset"]:active {
-  transform: translateY(0);
-}
-
-button:focus,
-input[type="button"]:focus,
-input[type="submit"]:focus,
-input[type="reset"]:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
-}
-
-/* ============================================================
-   FOCUS STATES – keyboard navigation & accessibility
-   ============================================================ */
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-a:focus-visible {
-  border-radius: 2px;
-  outline-offset: 0px;
-}
-
-/* ============================================================
-   IMAGES & MEDIA – responsive by default
-   ============================================================ */
-img,
-picture,
-video {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.25rem;
-}
-
-/* Prevent images from exceeding their container */
-figure {
-  margin: 0;
-  padding: 0;
-}
-
-figcaption {
-  font-size: var(--size-sm);
-  color: var(--color-text-muted);
-  margin-top: var(--space-xs);
-  font-style: italic;
-}
-
-/* ============================================================
-   LISTS – sensible defaults
-   ============================================================ */
-ul,
-ol {
-  padding-left: 2rem;
-}
-
-li {
-  margin-bottom: 0.5rem;
-}
-
-dl {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-sm);
-}
-
-dt {
-  font-weight: 600;
-}
-
-dd {
-  margin-left: 0;
-}
-
-/* ============================================================
-   CODE & PREFORMATTED TEXT
-   ============================================================ */
-code,
-pre {
-  background-color: var(--color-bg-header);
-  border: 1px solid var(--color-border);
-  border-radius: 0.25rem;
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 0.9em;
-}
-
-code {
-  padding: 0.125rem 0.375rem;
-  color: var(--color-accent);
-}
-
-pre {
-  padding: var(--space-sm);
-  overflow-x: auto;
-  line-height: 1.5;
-}
-
-pre code {
-  background: none;
-  border: none;
-  padding: 0;
-  color: inherit;
-}
-
-/* ============================================================
-   UTILITY CLASSES – common patterns for rapid development
-   ============================================================ */
-/* Spacing */
-.mt-sm { margin-top: var(--space-sm); }
-.mt-md { margin-top: var(--space-md); }
-.mt-lg { margin-top: var(--space-lg); }
-.mb-sm { margin-bottom: var(--space-sm); }
-.mb-md { margin-bottom: var(--space-md); }
-.mb-lg { margin-bottom: var(--space-lg); }
-.p-sm { padding: var(--space-sm); }
-.p-md { padding: var(--space-md); }
-.p-lg { padding: var(--space-lg); }
-
-/* Text alignment & transformation */
-.text-center { text-align: center; }
-.text-right  { text-align: right; }
-.text-left   { text-align: left; }
-.text-upper  { text-transform: uppercase; }
-.text-lower  { text-transform: lowercase; }
-
-/* Text sizing & coloring */
-.text-muted  { color: var(--color-text-muted); }
-.text-accent { color: var(--color-accent); }
-.text-small  { font-size: var(--size-sm); }
-.text-large  { font-size: var(--size-lg); }
-
-/* Display & visibility */
-.hidden { display: none !important; }
-.invisible { visibility: hidden; }
-.sr-only {
-  /* Screen reader text – visually hidden but available to assistive tech */
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Flexbox helpers */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.flex-center { justify-content: center; align-items: center; }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
-
-/* Grid helpers */
-.grid { display: grid; }
-.grid-cols-2 { grid-template-columns: 1fr 1fr; }
-.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-
-/* Clearfix */
-.clearfix::after {
-  content: '';
-  display: table;
-  clear: both;
-}
