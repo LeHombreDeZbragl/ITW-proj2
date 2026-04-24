@@ -13,12 +13,12 @@
    ============================================================ */
 :root {
   /* Colors */
-  --color-bg:         #0a1628;
-  --color-bg-header:  #0d1e38;
-  --color-text:       #e0e6f0;
-  --color-text-muted: #8a9ab0;
-  --color-accent:     #4a90d9;
-  --color-border:     #1e3050;
+  --color-bg:     #0d2137;
+  --color-text:   #f0ede6;
+  --color-accent: #f43f5e;
+
+  /* Header text colour – updated per section by JS */
+  --header-text: #e0e6f0;
 
   /* Typography */
   --font-body: 'Ubuntu', sans-serif;
@@ -41,7 +41,7 @@
   --space-lg: 3rem;
 
   /* Layout */
-  --header-height: 3.5rem;
+  --header-height: 5rem;
 }
 
 /* ============================================================
@@ -94,20 +94,21 @@ main {
   top: 0;
   z-index: 100;
   width: 100%;
-  background-color: var(--color-bg-header);
-  border-bottom: 0.0625rem solid var(--color-border);
 
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-md) var(--space-md);
   min-height: var(--header-height);
+
+  color: var(--header-text);
+  transition: color 0.35s ease;
 }
 
 .site-title {
-  color: var(--color-text);
+  color: inherit;
   text-decoration: none;
-  font-size: var(--size-lg);
+  font-size: var(--size-h2);
   font-weight: 700;
 }
 
@@ -127,7 +128,7 @@ main {
 }
 
 #nav-list a {
-  color: var(--color-text);
+  color: inherit;
   text-decoration: none;
 }
 
@@ -146,7 +147,7 @@ main > section {
 }
 
 /* ============================================================
-   FOOTER (inside #contact, pinned to bottom of 100vh section)
+   FOOTER (inside #contact)
    ============================================================ */
 #contact > footer {
   position: absolute;
@@ -288,40 +289,40 @@ main > section {
    SECTION COLOR THEMES
    ============================================================ */
 #about {
-  --section-bg:     #0a1628;
-  --section-text:   #e0e6f0;
-  --section-accent: #4a90d9;
+  --section-bg:     #0d2137;
+  --section-text:   #f0ede6;
+  --section-accent: #f43f5e;
   background-color: var(--section-bg);
   color: var(--section-text);
 }
 
 #education {
   --section-bg:     #f0ede6;
-  --section-text:   #1a1020;
-  --section-accent: #c0601a;
+  --section-text:   #0d2137;
+  --section-accent: #f43f5e;
   background-color: var(--section-bg);
   color: var(--section-text);
 }
 
 #projects {
-  --section-bg:     #111827;
-  --section-text:   #e8f4f8;
-  --section-accent: #22c55e;
+  --section-bg:     #0d2137;
+  --section-text:   #f0ede6;
+  --section-accent: #f43f5e;
   background-color: var(--section-bg);
   color: var(--section-text);
 }
 
 #hobbies {
-  --section-bg:     #f5f0fa;
-  --section-text:   #1e1b2e;
-  --section-accent: #7c3aed;
+  --section-bg:     #f0ede6;
+  --section-text:   #0d2137;
+  --section-accent: #f43f5e;
   background-color: var(--section-bg);
   color: var(--section-text);
 }
 
 #contact {
   --section-bg:     #0d2137;
-  --section-text:   #e8f4f8;
+  --section-text:   #f0ede6;
   --section-accent: #f43f5e;
   background-color: var(--section-bg);
   color: var(--section-text);
@@ -371,12 +372,14 @@ main > section a:hover {
     top: 100%;
     right: 0;
     left: 0;
+    min-width: 12rem;
     flex-direction: column;
     gap: 0;
-    background-color: var(--color-bg-header);
-    border-bottom: 0.0625rem solid var(--color-border);
+    background-color: var(--color-bg);
+    border-bottom: 0.0625rem solid color-mix(in srgb, var(--color-text) 20%, transparent);
     padding: var(--space-xs) 0;
     list-style: none;
+    z-index: 200;
   }
 
   /* Nav list visible when .open is toggled by JS */
@@ -387,10 +390,6 @@ main > section a:hover {
   #nav-list li a {
     display: block;
     padding: 0.75rem var(--space-sm);
-  }
-
-  #main-nav {
-    position: relative;
   }
 
   /* ── Disable custom scroll layout on mobile ── */
@@ -405,6 +404,15 @@ main > section a:hover {
 
   #site-header {
     position: sticky;
+    background-color: var(--color-bg);
+    border-bottom: 0.0625rem solid color-mix(in srgb, var(--color-text) 20%, transparent);
+    padding: var(--space-xs) var(--space-sm);
+    min-height: 3.5rem;
+  }
+
+  /* Keep nav link text legible over the fixed dark mobile header */
+  #nav-list a {
+    color: var(--color-text);
   }
 
   main > section {
@@ -457,5 +465,3 @@ main > section a:hover {
     margin-top: var(--space-md);
   }
 }
-
-

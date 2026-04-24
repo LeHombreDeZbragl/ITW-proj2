@@ -6,28 +6,84 @@
   let currentIdx      = 0;
   let isTransitioning = false;
 
-  // Accumulated delta while at the edge of a horizontal track.
-  // The user must scroll past this threshold before switching sections.
-  let overscrollAccum        = 0;
-  const OVERSCROLL_THRESHOLD = 600;
+  // Gesture-interval detection: a wheel burst is one gesture.
+  // Only the first event of a new gesture can trigger a section/track change.
+  const GESTURE_INTERVAL = 400; // ms gap that signals a new gesture
+  let lastWheelTime  = 0;
+  let gestureConsumed = false;
+  let trackSlide = false;
+
+  // Spike detector — recognises a new touchpad gesture from a deltaY upswing
+  // during a momentum decay tail, without needing a timing gap.
+  const spike = {
+    DECAY_CONFIRM: 4,   // consecutive decreasing events to enter decay phase
+    SPIKE_RATIO:   2.5, // spike must exceed recent minimum by this factor
+    SPIKE_ABS_MIN: 15,  // and must be at least this many pixels
+    SPIKE_CONFIRM: 2,   // consecutive spike events needed to confirm
+    prevDeltaY:   0,
+    decayCount:   0,
+    inDecayPhase: false,
+    spikeCount:   0,
+    recentMin:    Infinity,
+    reset() {
+      this.prevDeltaY   = 0;
+      this.decayCount   = 0;
+      this.inDecayPhase = false;
+      this.spikeCount   = 0;
+      this.recentMin    = Infinity;
+    },
+    // Returns true when a new gesture is confirmed by the upswing pattern
+    update(dy) {
+      if (dy <= 0) return false;
+      if (this.inDecayPhase) {
+        if (dy < this.recentMin) {
+          this.recentMin  = dy;
+          this.spikeCount = 0;
+        } else if (dy > this.recentMin * this.SPIKE_RATIO && dy > this.SPIKE_ABS_MIN) {
+          if (++this.spikeCount >= this.SPIKE_CONFIRM) { this.reset(); return true; }
+        } else {
+          this.spikeCount = 0;
+        }
+      } else {
+        if (dy <= this.prevDeltaY) {
+          if (++this.decayCount >= this.DECAY_CONFIRM) {
+            this.inDecayPhase = true;
+            this.recentMin    = dy;
+            this.spikeCount   = 0;
+          }
+        } else {
+          this.decayCount = 0;
+        }
+      }
+      this.prevDeltaY = dy;
+      return false;
+    }
+  };
 
   // Keep currentIdx in sync after anchor-link / touch navigation
   const snapObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         const i = sections.indexOf(entry.target);
-        if (i !== -1) currentIdx = i;
+        if (i !== -1) { currentIdx = i; updateHeader(); }
       }
     });
   }, { threshold: 0.5 });
   sections.forEach(function (s) { snapObserver.observe(s); });
 
+  function updateHeader() {
+    const section = sections[currentIdx];
+    if (!section) return;
+    const textColor = getComputedStyle(section).getPropertyValue('--section-text').trim();
+    if (textColor) document.documentElement.style.setProperty('--header-text', textColor);
+  }
+
   // Programmatically scroll to a section by index
   function goToSection(idx) {
     if (idx < 0 || idx >= sections.length || isTransitioning) return;
     isTransitioning = true;
-    overscrollAccum = 0;
     currentIdx = idx;
+    updateHeader();
     document.documentElement.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
 
     // Release the lock when vertical scroll settles, with a 1 s hard cap
@@ -66,6 +122,22 @@
   window.addEventListener('wheel', function (e) {
     if (isMobile()) return;
     e.preventDefault();
+
+    // Update gesture state before any early return so momentum events extend the window
+    const now = Date.now();
+    const isNewGesture = (now - lastWheelTime) > GESTURE_INTERVAL;
+    lastWheelTime = now;
+    if (isNewGesture) {
+        gestureConsumed = false;
+        trackSlide      = false;
+        spike.reset();
+    } else if ((gestureConsumed || trackSlide) && spike.update(Math.abs(e.deltaY))) {
+        // Upswing confirmed — treat as a fresh gesture
+        gestureConsumed = false;
+        trackSlide      = false;
+        isTransitioning = false;
+    }
+
     if (isTransitioning) return;
 
     const section = sections[currentIdx];
@@ -76,35 +148,39 @@
       const atStart = track.scrollLeft <= 0;
       const atEnd   = track.scrollLeft >= max - 1;
 
-      if (e.deltaY > 0 && !atEnd) {
-        // Still room to scroll right — consume and reset accumulator
-        overscrollAccum = 0;
+      if (e.deltaY > 0 && !atEnd && !gestureConsumed) {
+        // Still room to scroll right — consume gesture
+        trackSlide = true;
         track.scrollLeft += e.deltaY;
-      } else if (e.deltaY < 0 && !atStart) {
-        // Still room to scroll left — consume and reset accumulator
-        overscrollAccum = 0;
+      } else if (e.deltaY < 0 && !atStart && !gestureConsumed) {
+        // Still room to scroll left — consume gesture
+        trackSlide = true;
         track.scrollLeft += e.deltaY;
       } else if (e.deltaY > 0) {
-        // At the right edge — require the user to build up intentional overscroll
-        overscrollAccum += e.deltaY;
-        if (overscrollAccum >= OVERSCROLL_THRESHOLD) {
-          overscrollAccum = 0;
+        // At the right edge — require a new gesture to leave the section
+        if (!gestureConsumed && !trackSlide) {
+          gestureConsumed = true;
           goToSection(currentIdx + 1);
         }
       } else if (e.deltaY < 0) {
-        // At the left edge — same resistance going backwards
-        overscrollAccum += e.deltaY; // negative
-        if (overscrollAccum <= -OVERSCROLL_THRESHOLD) {
-          overscrollAccum = 0;
+        // At the left edge — same for going backwards
+        if (!gestureConsumed && !trackSlide) {
+          gestureConsumed = true;
           goToSection(currentIdx - 1);
         }
       }
     } else {
-      // Plain section — jump exactly one section
-      if      (e.deltaY > 0) { goToSection(currentIdx + 1); }
-      else if (e.deltaY < 0) { goToSection(currentIdx - 1); }
+      // Plain section — require a new gesture per section jump
+      if (!gestureConsumed) {
+        gestureConsumed = true;
+        if      (e.deltaY > 0) { goToSection(currentIdx + 1); }
+        else if (e.deltaY < 0) { goToSection(currentIdx - 1); }
+      }
     }
   }, { passive: false });
+
+  // Set header to match the first section on load
+  updateHeader();
 
   // Progress bar updates
   document.querySelectorAll('.section-track').forEach(function (track) {
