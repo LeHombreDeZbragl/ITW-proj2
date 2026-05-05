@@ -8,7 +8,7 @@
 
   // Gesture-interval detection: a wheel burst is one gesture.
   // Only the first event of a new gesture can trigger a section/track change.
-  const GESTURE_INTERVAL = 400; // ms gap that signals a new gesture
+  const GESTURE_INTERVAL = 250; // ms gap that signals a new gesture
   let lastWheelTime  = 0;
   let gestureConsumed = false;
   let trackSlide = false;

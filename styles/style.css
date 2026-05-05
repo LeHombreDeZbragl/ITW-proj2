@@ -39,6 +39,7 @@
   --space-sm: 1rem;
   --space-md: 1.5rem;
   --space-lg: 3rem;
+  --space-xxxl: 8rem;
 
   /* Layout */
   --header-height: 5rem;
@@ -196,13 +197,10 @@ main > section {
 
 /* Individual panels inside a track */
 .section-panel {
-  min-width: 100vw;
   height: 100%;
   flex-shrink: 0;
   overflow-y: auto;
-  padding: calc(var(--header-height) + var(--space-lg))
-           max(var(--space-md), calc((100vw - 1200px) / 2))
-           var(--space-lg);
+  padding: calc(var(--header-height) + var(--space-lg)) var(--space-xxxl) var(--space-lg);
   background-color: var(--section-bg);
   color: var(--section-text);
 }
@@ -225,6 +223,7 @@ main > section {
 
 /* Title-only intro panel */
 .section-intro {
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -239,13 +238,6 @@ main > section {
   font-size: clamp(3rem, 8vw, 6rem);
 }
 
-.section-intro .scroll-hint {
-  font-size: var(--size-sm);
-  opacity: 0.5;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 /* Single-panel sections – vertically centred */
 .section-content {
   display: flex;
@@ -253,9 +245,7 @@ main > section {
   justify-content: center;
   gap: var(--space-sm);
   height: 100%;
-  padding: calc(var(--header-height) + var(--space-lg))
-           max(var(--space-md), calc((100vw - 1200px) / 2))
-           var(--space-lg);
+  padding: calc(var(--header-height) + var(--space-lg)) var(--space-lg) var(--space-lg);
   overflow-y: auto;
 }
 
@@ -286,44 +276,20 @@ main > section {
 }
 
 /* ============================================================
-   SECTION COLOR THEMES
+   SECTION COLOR THEMES – alternating, driven by root tokens
    ============================================================ */
-#about {
-  --section-bg:     #0d2137;
-  --section-text:   #f0ede6;
-  --section-accent: #f43f5e;
+main > section:nth-child(odd) {
+  --section-bg:     var(--color-bg);
+  --section-text:   var(--color-text);
+  --section-accent: var(--color-accent);
   background-color: var(--section-bg);
   color: var(--section-text);
 }
 
-#education {
-  --section-bg:     #f0ede6;
-  --section-text:   #0d2137;
-  --section-accent: #f43f5e;
-  background-color: var(--section-bg);
-  color: var(--section-text);
-}
-
-#projects {
-  --section-bg:     #0d2137;
-  --section-text:   #f0ede6;
-  --section-accent: #f43f5e;
-  background-color: var(--section-bg);
-  color: var(--section-text);
-}
-
-#hobbies {
-  --section-bg:     #f0ede6;
-  --section-text:   #0d2137;
-  --section-accent: #f43f5e;
-  background-color: var(--section-bg);
-  color: var(--section-text);
-}
-
-#contact {
-  --section-bg:     #0d2137;
-  --section-text:   #f0ede6;
-  --section-accent: #f43f5e;
+main > section:nth-child(even) {
+  --section-bg:     var(--color-text);
+  --section-text:   var(--color-bg);
+  --section-accent: var(--color-accent);
   background-color: var(--section-bg);
   color: var(--section-text);
 }
@@ -338,6 +304,112 @@ main > section a:hover {
 }
 
 /* ============================================================
+   PROJECT PANELS – column-wrap flow layout
+   Items stack vertically; overflow wraps into a new column.
+   Each column is only as wide as its widest element.
+   ============================================================ */
+.project-panel {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: var(--space-sm) var(--space-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.proj-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.proj-info > h3 {
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  line-height: var(--line-height-heading);
+  margin-bottom: 0;
+}
+
+.tech-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+/* SVG icon images */
+.tech-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+/* Font Awesome fallback icons (e.g. Google Sheets) */
+.tech-icons i {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.proj-info > p {
+  max-width: 55ch;
+  margin-bottom: 0;
+}
+
+/* Media elements as direct children of the panel */
+.project-panel > img {
+  height: auto;
+  max-height: 42vh;
+  width: auto;
+  max-width: 50vw;
+  border-radius: 0.5rem;
+  cursor: zoom-in;
+  flex-shrink: 0;
+  display: block;
+}
+
+.project-panel > video {
+  max-height: 30vh;
+  width: auto;
+  max-width: 50vw;
+  border-radius: 0.5rem;
+  display: block;
+  flex-shrink: 0;
+}
+
+.proj-media-placeholder {
+  width: 20rem;
+  min-height: 12rem;
+  border-radius: 0.5rem;
+  border: 0.125rem dashed color-mix(in srgb, var(--section-text) 25%, transparent);
+  background: color-mix(in srgb, var(--section-text) 5%, transparent);
+}
+
+/* Lightbox overlay */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+#lightbox.open {
+  display: flex;
+}
+
+#lightbox > img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 0.25rem;
+  box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.5);
+  cursor: zoom-out;
+}
+
+/* ============================================================
    RESPONSIVE – hamburger menu at <= 48em (≈768px)
    Using em for media queries is best practice: zoom-resilient and
    independent of root font-size overrides.
@@ -347,22 +419,12 @@ main > section a:hover {
   /* Show hamburger button */
   #hamburger {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 2rem;
-    height: 1.5rem;
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
-  }
-
-  /* Three bar lines – px used here intentionally for a crisp hairline */
-  #hamburger span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: var(--color-text);
+    color: white;
+    font-size: 1.4rem;
   }
 
   /* Nav list hidden by default on mobile */
@@ -451,10 +513,6 @@ main > section a:hover {
     font-size: var(--size-h2);
   }
 
-  .section-intro .scroll-hint {
-    display: none;
-  }
-
   .section-progress {
     display: none;
   }
@@ -463,5 +521,22 @@ main > section a:hover {
     position: static;
     border-top: 0.0625rem solid var(--color-border);
     margin-top: var(--space-md);
+  }
+
+  .project-panel {
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex-wrap: nowrap;
+  }
+
+  .project-panel > img,
+  .project-panel > video {
+    max-width: 100%;
+    width: 100%;
+    max-height: none;
+  }
+
+  .proj-info > h3 {
+    font-size: var(--size-h2);
   }
 }
