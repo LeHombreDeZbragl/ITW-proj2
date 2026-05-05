@@ -65,7 +65,7 @@
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         const i = sections.indexOf(entry.target);
-        if (i !== -1) { currentIdx = i; updateHeader(); }
+        if (i !== -1) { currentIdx = i; updateHeader(); updateNavButtons(); }
       }
     });
   }, { threshold: 0.5 });
@@ -84,6 +84,7 @@
     isTransitioning = true;
     currentIdx = idx;
     updateHeader();
+    updateNavButtons();
     document.documentElement.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
 
     // Release the lock when vertical scroll settles, with a 1 s hard cap
@@ -182,7 +183,54 @@
   // Set header to match the first section on load
   updateHeader();
 
-  // Progress bar updates
+  // ── Panel rise effect ──────────────────────────────────────────────────────
+  // Panels within a horizontal track rise slightly when entering/exiting the
+  // visible area. Transition threshold: outer 20% of panel width.
+  const RISE_GAP     = 0.70; // fraction of panel width that triggers the effect
+  const RISE_MAX_PX  = 80;   // maximum upward offset in pixels
+
+  function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+  function updatePanelRiseEffects(track) {
+    const trackRect = track.getBoundingClientRect();
+    const panels = track.querySelectorAll('.section-panel');
+    panels.forEach(function (panel) {
+      const r = panel.getBoundingClientRect();
+      const w = r.width;
+      if (w === 0) return;
+
+      // How much of the panel has entered from the right (0 = not visible, 1 = fully inside)
+      const leftPenetration  = clamp((trackRect.right  - r.left) / w, 0, 1);
+      // How much of the panel is still visible before exiting to the left (0 = gone, 1 = fully inside)
+      const rightPenetration = clamp((r.right - trackRect.left)  / w, 0, 1);
+
+      var offset = 0;
+      if (leftPenetration < RISE_GAP) {
+        // Entering from the right — rises, then settles as it reaches 20%
+        offset = -RISE_MAX_PX * (1 - leftPenetration / RISE_GAP);
+      } else if (rightPenetration < RISE_GAP) {
+        // Exiting to the left — rises as it disappears
+        offset = -RISE_MAX_PX * (1 - rightPenetration / RISE_GAP);
+      }
+      panel.style.transform = 'translateY(' + offset + 'px)';
+    });
+  }
+
+  // ── Section nav buttons ───────────────────────────────────────────────────
+  const scrollUpBtn   = document.getElementById('scroll-up-btn');
+  const scrollDownBtn = document.getElementById('scroll-down-btn');
+
+  function updateNavButtons() {
+    if (scrollUpBtn)   scrollUpBtn.disabled   = currentIdx <= 0;
+    if (scrollDownBtn) scrollDownBtn.disabled = currentIdx >= sections.length - 1;
+  }
+
+  if (scrollUpBtn)   scrollUpBtn.addEventListener('click',   function () { goToSection(currentIdx - 1); });
+  if (scrollDownBtn) scrollDownBtn.addEventListener('click', function () { goToSection(currentIdx + 1); });
+
+  updateNavButtons();
+
+  // Progress bar updates + panel rise
   document.querySelectorAll('.section-track').forEach(function (track) {
     const bar = track.closest('section').querySelector('.section-progress-bar');
     track.addEventListener('scroll', function () {
@@ -190,6 +238,9 @@
         const max = track.scrollWidth - track.clientWidth;
         bar.style.width = (max > 0 ? (track.scrollLeft / max * 100) : 0) + '%';
       }
+      updatePanelRiseEffects(track);
     }, { passive: true });
+    // Initial state
+    updatePanelRiseEffects(track);
   });
 })();

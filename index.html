@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Osobní profilová stránka – vzdělání, projekty a koníčky.">
+  <meta name="description" content="Osobní profilová stránka – vzdělání, projekty a volný čas.">
   <title>Tomáš Buchta – Profil</title>
   <!-- Ubuntu font from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,11 +34,18 @@
         <li><a href="#about">O mně</a></li>
         <li><a href="#education">Vzdělání</a></li>
         <li><a href="#projects">Projekty</a></li>
-        <li><a href="#hobbies">Koníčky</a></li>
+        <li><a href="#hobbies">Volný čas</a></li>
         <li><a href="#contact">Kontakt</a></li>
       </ul>
     </nav>
   </header>
+
+  <button id="scroll-up-btn" class="section-nav-btn" aria-label="Předchozí sekce">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+  <button id="scroll-down-btn" class="section-nav-btn" aria-label="Další sekce">
+    <i class="fas fa-chevron-down"></i>
+  </button>
 
   <main>
 
@@ -72,6 +79,7 @@
 
         <div class="section-panel section-intro">
           <h2>Projekty</h2>
+          <p class="scroll-hint">Rolovat →</p>
         </div>
 
         <section id="project-games" class="section-panel project-panel">
@@ -154,7 +162,7 @@
             <p>
               Script pro stahování výsledů z hasičských soutěží z webu firesport.eu.
               Tento script má workflow na GitHubu a spouští se každý den.
-              Tato data jsou uložena v Supabase a použita na webu, který tato data zobrazuje a umožňuje jejich filtrování.
+              Tato data jsou uložena v Supabase a použita na webu, který tato data zobrazuje a umožňuje jejich filtrování. (WIP)
             </p>
           </div>
           <img src="assets/projects/firestamps/timestampsweb.png" alt="Firestamps Scraper web">
@@ -201,6 +209,7 @@
 
         <div class="section-panel section-intro">
           <h2>Volný čas</h2>
+          <p class="scroll-hint">Rolovat →</p>
         </div>
 
         <section id="sports" class="section-panel">
@@ -213,7 +222,7 @@
           <h3>Straight line missions</h3>
           <p>
           </p>
-          <div class="slm-gallery">
+          <div>
             <img src="assets/free_time/SLM/moravaline.png" alt="Straight Line Mission across Morava">
             <img src="assets/free_time/SLM/pardubiceline.png" alt="Straight Line Mission across Pardubice">
             <img src="assets/free_time/SLM/vysocinaline.png" alt="Straight Line Mission across Vysocina">

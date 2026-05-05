@@ -163,24 +163,6 @@ main > section {
 }
 
 /* ============================================================
-   STRAIGHT LINE MISSIONS GALLERY
-   ============================================================ */
-.slm-gallery {
-  display: flex;
-  gap: var(--space-sm);
-  margin: var(--space-md) 0;
-  overflow-x: auto;
-}
-
-.slm-gallery img {
-  height: 180px;
-  width: auto;
-  object-fit: contain;
-  flex-shrink: 0;
-  border-radius: 0.25rem;
-}
-
-/* ============================================================
    HORIZONTAL TRACK (sections with sub-sections)
    ============================================================ */
 .section-track {
@@ -203,6 +185,8 @@ main > section {
   padding: calc(var(--header-height) + var(--space-lg)) var(--space-xxxl) var(--space-lg);
   background-color: var(--section-bg);
   color: var(--section-text);
+  will-change: transform;
+  transition: transform 0.07s linear;
 }
 
 .section-panel a {
@@ -236,6 +220,13 @@ main > section {
 
 .section-intro h2 {
   font-size: clamp(3rem, 8vw, 6rem);
+}
+
+.scroll-hint {
+  font-size: var(--size-md);
+  opacity: 0.6;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 /* Single-panel sections – vertically centred */
@@ -384,6 +375,51 @@ main > section a:hover {
   background: color-mix(in srgb, var(--section-text) 5%, transparent);
 }
 
+/* ============================================================
+   SECTION NAV BUTTONS (prev / next vertical section)
+   ============================================================ */
+.section-nav-btn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 201;
+  background: color-mix(in srgb, var(--header-text) 12%, transparent);
+  border: 0.0625rem solid color-mix(in srgb, var(--header-text) 25%, transparent);
+  color: var(--header-text);
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.35s ease;
+  backdrop-filter: blur(4px);
+}
+
+.section-nav-btn:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--header-text) 22%, transparent);
+}
+
+.section-nav-btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#scroll-up-btn {
+  top: var(--space-md);
+  /* transform is overridden to keep translateX(-50%) in place */
+  transform: translateX(-50%);
+}
+
+#scroll-down-btn {
+  bottom: var(--space-sm);
+  transform: translateX(-50%);
+}
+
 /* Lightbox overlay */
 #lightbox {
   display: none;
@@ -513,7 +549,15 @@ main > section a:hover {
     font-size: var(--size-h2);
   }
 
+  .scroll-hint {
+    display: none;
+  }
+
   .section-progress {
+    display: none;
+  }
+
+  .section-nav-btn {
     display: none;
   }
 
