@@ -33,23 +33,4 @@
     if (!img.closest('.project-panel')) return;
     openLightbox(img.src, img.alt);
   });
-
-  /* ── YouTube click-to-play ─────────────────────────────────── */
-  document.addEventListener('click', function (e) {
-    var thumb = e.target.closest('.yt-thumb');
-    if (!thumb) return;
-    var videoId = thumb.dataset.videoId;
-    if (!videoId) return;
-
-    var wrapper = document.createElement('div');
-    wrapper.className = 'yt-embed-active';
-
-    var iframe = document.createElement('iframe');
-    iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0';
-    iframe.title = 'YouTube video player';
-    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-    iframe.setAttribute('allowfullscreen', '');
-    wrapper.appendChild(iframe);
-    thumb.replaceWith(wrapper);
-  });
 }());

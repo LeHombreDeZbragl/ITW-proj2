@@ -516,13 +516,13 @@ main > section a:hover {
   main > section {
     height: auto;
     overflow: visible;
-    scroll-margin-top: var(--header-height);
+    scroll-margin-top: 3.5rem;
   }
 
   .section-content {
     display: block;
     height: auto;
-    padding: calc(var(--header-height) + var(--space-lg)) var(--space-sm) var(--space-lg);
+    padding: var(--space-lg) var(--space-sm) var(--space-lg);
   }
 
   .section-track {
@@ -542,7 +542,7 @@ main > section a:hover {
   .section-intro {
     display: block;
     text-align: left;
-    padding: calc(var(--header-height) + var(--space-lg)) var(--space-sm) var(--space-sm);
+    padding: var(--space-lg) var(--space-sm) var(--space-sm);
   }
 
   .section-intro h2 {
@@ -581,6 +581,6 @@ main > section a:hover {
   }
 
   .proj-info > h3 {
-    font-size: var(--size-h2);
+    font-size: var(--size-h3);
   }
 }
