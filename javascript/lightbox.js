@@ -24,12 +24,13 @@
     }
   });
 
-  /* Click on project images (but not the YouTube thumbnail) */
+  /* Click on project images (but not the YouTube thumbnail or tech icons) */
   document.addEventListener('click', function (e) {
     var img = e.target.closest('img');
     if (!img) return;
     if (img.closest('.yt-thumb')) return;
-    if (!img.closest('.proj-media-primary, .proj-right')) return;
+    if (img.classList.contains('tech-icon')) return;
+    if (!img.closest('.project-panel')) return;
     openLightbox(img.src, img.alt);
   });
 
