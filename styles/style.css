@@ -17,8 +17,8 @@
   --color-text:   #f0ede6;
   --color-accent: #f43f5e;
 
-  /* Header text colour – updated per section by JS */
-  --header-text: #e0e6f0;
+  /* Section text colour – updated per section by JS */
+  --section-text: #f0ede6;
 
   /* Typography */
   --font-body: 'Ubuntu', sans-serif;
@@ -39,7 +39,7 @@
   --space-sm: 1rem;
   --space-md: 1.5rem;
   --space-lg: 3rem;
-  --space-xxxl: 8rem;
+  --space-xxxl: 7rem;
 
   /* Layout */
   --header-height: 5rem;
@@ -99,10 +99,10 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-md) var(--space-lg);
   min-height: var(--header-height);
 
-  color: var(--header-text);
+  color: var(--section-text);
   transition: color 0.35s ease;
 }
 
@@ -131,6 +131,13 @@ main {
 #nav-list a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease, font-size 0.2s ease;
+}
+
+#nav-list a.active {
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
 /* Hamburger button hidden on desktop */
@@ -294,12 +301,27 @@ main > section a:hover {
   opacity: 0.8;
 }
 
+/* GitHub repo link – override general link color, use section text instead */
+main > section a.github-link {
+  color: var(--section-text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+main > section a.github-link:hover {
+  color: var(--color-accent);
+  transform: scale(1.2);
+  opacity: 1;
+}
+
 /* ============================================================
-   PROJECT PANELS – column-wrap flow layout
+   MEDIA PANELS – column-wrap flow layout (projects & hobbies)
    Items stack vertically; overflow wraps into a new column.
    Each column is only as wide as its widest element.
    ============================================================ */
-.project-panel {
+.media-panel {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -310,13 +332,13 @@ main > section a:hover {
   overflow-y: hidden;
 }
 
-.proj-info {
+.panel-info {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
 }
 
-.proj-info > h3 {
+.panel-info > h3 {
   font-size: clamp(2.5rem, 4.5vw, 4rem);
   line-height: var(--line-height-heading);
   margin-bottom: 0;
@@ -341,13 +363,20 @@ main > section a:hover {
   line-height: 1;
 }
 
-.proj-info > p {
+/* GitHub repo link styling (color handled by scoped link rules below) */
+.tech-icons .github-link {
+  margin-left: auto;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.panel-info > p {
   max-width: 55ch;
   margin-bottom: 0;
 }
 
 /* Media elements as direct children of the panel */
-.project-panel > img {
+.media-panel > img {
   height: auto;
   max-height: 42vh;
   width: auto;
@@ -358,7 +387,7 @@ main > section a:hover {
   display: block;
 }
 
-.project-panel > video {
+.media-panel > video {
   max-height: 30vh;
   width: auto;
   max-width: 50vw;
@@ -383,9 +412,9 @@ main > section a:hover {
   left: 50%;
   transform: translateX(-50%);
   z-index: 201;
-  background: color-mix(in srgb, var(--header-text) 12%, transparent);
-  border: 0.0625rem solid color-mix(in srgb, var(--header-text) 25%, transparent);
-  color: var(--header-text);
+  background: color-mix(in srgb, var(--section-text) 12%, transparent);
+  border: 0.0625rem solid color-mix(in srgb, var(--section-text) 25%, transparent);
+  color: var(--section-text);
   border-radius: 50%;
   width: 2.5rem;
   height: 2.5rem;
@@ -401,7 +430,7 @@ main > section a:hover {
 
 .section-nav-btn:hover {
   opacity: 1;
-  background: color-mix(in srgb, var(--header-text) 22%, transparent);
+  background: color-mix(in srgb, var(--section-text) 22%, transparent);
 }
 
 .section-nav-btn:disabled {
@@ -567,20 +596,20 @@ main > section a:hover {
     margin-top: var(--space-md);
   }
 
-  .project-panel {
+  .media-panel {
     overflow-x: hidden;
     overflow-y: auto;
     flex-wrap: nowrap;
   }
 
-  .project-panel > img,
-  .project-panel > video {
+  .media-panel > img,
+  .media-panel > video {
     max-width: 100%;
     width: 100%;
     max-height: none;
   }
 
-  .proj-info > h3 {
+  .panel-info > h3 {
     font-size: var(--size-h3);
   }
 }

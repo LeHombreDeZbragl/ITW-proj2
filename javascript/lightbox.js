@@ -30,7 +30,7 @@
     if (!img) return;
     if (img.closest('.yt-thumb')) return;
     if (img.classList.contains('tech-icon')) return;
-    if (!img.closest('.project-panel')) return;
+    if (!img.closest('.media-panel')) return;
     openLightbox(img.src, img.alt);
   });
 }());

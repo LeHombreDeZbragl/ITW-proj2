@@ -5,10 +5,11 @@
   const sections = Array.from(document.querySelectorAll('main > section'));
   let currentIdx      = 0;
   let isTransitioning = false;
+  let isProgrammaticScroll = false;  // Track programmatic scrolls to avoid snap conflicts
 
   // Gesture-interval detection: a wheel burst is one gesture.
   // Only the first event of a new gesture can trigger a section/track change.
-  const GESTURE_INTERVAL = 250; // ms gap that signals a new gesture
+  const GESTURE_INTERVAL = 150; // ms gap that signals a new gesture
   let lastWheelTime  = 0;
   let gestureConsumed = false;
   let trackSlide = false;
@@ -65,7 +66,7 @@
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         const i = sections.indexOf(entry.target);
-        if (i !== -1) { currentIdx = i; updateHeader(); updateNavButtons(); }
+        if (i !== -1) { currentIdx = i; updateHeader(); updateURL(); updateNavActive(); updateNavButtons(); }
       }
     });
   }, { threshold: 0.5 });
@@ -75,15 +76,32 @@
     const section = sections[currentIdx];
     if (!section) return;
     const textColor = getComputedStyle(section).getPropertyValue('--section-text').trim();
-    if (textColor) document.documentElement.style.setProperty('--header-text', textColor);
+    if (textColor) document.documentElement.style.setProperty('--section-text', textColor);
+  }
+
+  function updateURL() {
+    var section = sections[currentIdx];
+    if (section) history.replaceState(null, '', '#' + section.id);
+  }
+
+  function updateNavActive() {
+    var section = sections[currentIdx];
+    if (!section) return;
+    var id = section.id;
+    document.querySelectorAll('#nav-list a').forEach(function (link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+    });
   }
 
   // Programmatically scroll to a section by index
   function goToSection(idx) {
     if (idx < 0 || idx >= sections.length || isTransitioning) return;
     isTransitioning = true;
+    isProgrammaticScroll = true;  // Flag: prevent snap during this scroll
     currentIdx = idx;
     updateHeader();
+    updateURL();
+    updateNavActive();
     updateNavButtons();
     document.documentElement.scrollTo({ top: sections[idx].offsetTop, behavior: 'smooth' });
 
@@ -93,6 +111,7 @@
       clearTimeout(debounce);
       clearTimeout(fallback);
       isTransitioning = false;
+      isProgrammaticScroll = false;  // Flag cleared: snap can now work again
       window.removeEventListener('scroll', tick);
     }
     function tick() {
@@ -182,12 +201,14 @@
 
   // Set header to match the first section on load
   updateHeader();
+  updateURL();
+  updateNavActive();
 
   // ── Panel rise effect ──────────────────────────────────────────────────────
   // Panels within a horizontal track rise slightly when entering/exiting the
   // visible area. Transition threshold: outer 20% of panel width.
-  const RISE_GAP     = 0.70; // fraction of panel width that triggers the effect
-  const RISE_MAX_PX  = 80;   // maximum upward offset in pixels
+  const RISE_GAP     = 0.80; // fraction of panel width that triggers the effect
+  const RISE_MAX_PX  = 100;   // maximum upward offset in pixels
 
   function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
 
@@ -229,6 +250,45 @@
   if (scrollDownBtn) scrollDownBtn.addEventListener('click', function () { goToSection(currentIdx + 1); });
 
   updateNavButtons();
+
+  // ── Scrollbar snap-to-section ─────────────────────────────────────────────
+  // When user finishes scrolling via scrollbar and is between sections, snap to closest.
+  // Uses a long debounce to let smooth scrolls complete and settle.
+  const SCROLL_END_DEBOUNCE = 150;  // Increased to 600ms to let smooth scrolls settle
+  let scrollEndTimeout = null;
+
+  function snapToClosestSection() {
+    // Don't snap if a programmatic scroll is in progress (navbar, arrows, etc.)
+    if (isProgrammaticScroll || isTransitioning) return;
+    
+    const scrollTop = window.scrollY;
+    let closestIdx = 0;
+    let closestDistance = Infinity;
+
+    sections.forEach(function (section, idx) {
+      const distance = Math.abs(section.offsetTop - scrollTop);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIdx = idx;
+      }
+    });
+
+    // Snap if:
+    // 1. We're not already at the exact section top (distance > 10px tolerance), AND
+    // 2. We're actually between sections (not at start/end of a section)
+    const tolerance = 10;  // pixels
+    if (closestDistance > tolerance) {
+      goToSection(closestIdx);
+    }
+  }
+
+  window.addEventListener('scroll', function () {
+    // Only debounce snap if NOT during a programmatic scroll
+    if (!isProgrammaticScroll) {
+      clearTimeout(scrollEndTimeout);
+      scrollEndTimeout = setTimeout(snapToClosestSection, SCROLL_END_DEBOUNCE);
+    }
+  }, { passive: true });
 
   // Progress bar updates + panel rise
   document.querySelectorAll('.section-track').forEach(function (track) {
