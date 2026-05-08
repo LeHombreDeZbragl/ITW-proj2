@@ -402,6 +402,20 @@ main > section a.github-link:hover {
   border-radius: 0.5rem;
   border: 0.125rem dashed color-mix(in srgb, var(--section-text) 25%, transparent);
   background: color-mix(in srgb, var(--section-text) 5%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  flex-shrink: 0;
+}
+
+.proj-media-placeholder .placeholder-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--section-text) 60%, transparent);
+  line-height: var(--line-height);
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 /* ============================================================
