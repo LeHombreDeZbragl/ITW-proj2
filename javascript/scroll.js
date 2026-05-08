@@ -257,9 +257,14 @@
   const SCROLL_END_DEBOUNCE = 150;  // Increased to 600ms to let smooth scrolls settle
   let scrollEndTimeout = null;
 
+  function isDesktopView() {
+    // Snap only works on desktop (viewport width >= 48em = 768px)
+    return window.innerWidth >= 768;
+  }
+
   function snapToClosestSection() {
-    // Don't snap if a programmatic scroll is in progress (navbar, arrows, etc.)
-    if (isProgrammaticScroll || isTransitioning) return;
+    // Don't snap on mobile, during programmatic scrolls, or transitions
+    if (!isDesktopView() || isProgrammaticScroll || isTransitioning) return;
     
     const scrollTop = window.scrollY;
     let closestIdx = 0;
@@ -283,8 +288,8 @@
   }
 
   window.addEventListener('scroll', function () {
-    // Only debounce snap if NOT during a programmatic scroll
-    if (!isProgrammaticScroll) {
+    // Only debounce snap if NOT during a programmatic scroll and we're on desktop
+    if (!isProgrammaticScroll && isDesktopView()) {
       clearTimeout(scrollEndTimeout);
       scrollEndTimeout = setTimeout(snapToClosestSection, SCROLL_END_DEBOUNCE);
     }
