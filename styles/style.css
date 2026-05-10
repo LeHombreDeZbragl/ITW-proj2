@@ -364,8 +364,11 @@ main > section a.github-link:hover {
 }
 
 /* GitHub repo link styling (color handled by scoped link rules below) */
-.tech-icons .github-link {
+.tech-icons .github-link:first-of-type {
   margin-left: auto;
+}
+
+.tech-icons .github-link {
   font-size: 2rem;
   line-height: 1;
 }
